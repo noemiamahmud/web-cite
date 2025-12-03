@@ -1,12 +1,14 @@
 import './defaultHeader.css';
 
-export default function DefaultHeaderSignedOut() {
-  return (
+export default function DefaultHeaderSignedIn() {
+    const text = "username"; // Placeholder for dynamic username
+    
+    return (
     <>
       <div className="Default-top">
         <img id="Web-Cite-logo" src="/componentAssets/web-cite-logo.svg" alt="Logo" />
         <div className="right-side">
-          <button id="login-link">Login/Sign Up</button>
+          <button id="login-link">{text}</button>
           <img className="profile-icon" src="/componentAssets/gg--profile.png" alt="Profile Icon" />
         </div>
       </div>
