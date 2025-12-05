@@ -1,12 +1,18 @@
 import './defaultHeader.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function DefaultHeaderSignedOut() {
+  const navigate = useNavigate(); 
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   return (
     <>
       <div className="Default-top">
         <img id="Web-Cite-logo" src="/componentAssets/web-cite-logo.svg" alt="Logo" />
         <div className="right-side">
-          <button id="login-link">Login/Sign Up</button>
+          <button id="login-link" onClick={handleLoginClick}>Login/Sign Up</button>
           <img className="profile-icon" src="/componentAssets/gg--profile.png" alt="Profile Icon" />
         </div>
       </div>

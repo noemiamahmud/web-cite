@@ -1,21 +1,30 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
+import DefaultHeader from './components/defaultHeader-signedout'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; 
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import './App.css' 
+import Search from './pages/Search';
+import Web from './pages/Web';
 
-import LandingPage from "./pages/LandingPage";
-import SearchResultsPage from "./pages/SearchResultsPage";
-import CreateWebPage from "./pages/CreateWebPage";
-import WebViewerPage from "./pages/WebViewerPage";
-import DashboardPage from "./pages/DashboardPage";
-
-export default function App() {
+function App() {
+  const [count, setCount] = useState(0)
+  
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/search" element={<SearchResultsPage />} />
-        <Route path="/create-web/:pmid" element={<CreateWebPage />} />
-        <Route path="/web/:id" element={<WebViewerPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
+    <div> 
+      <Router>
+        <DefaultHeader/>
+        <Routes> 
+          <Route path="/" element={<Search />} />
+          <Route path="/login" element={<Login />} /> 
+          <Route path="/signup" element={<Signup />} /> 
+          <Route path="/web/:pmid" element={<Web />} />
+        </Routes>
+      </Router>
+    </div>
+  )
 }
+
+export default App
