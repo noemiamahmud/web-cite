@@ -2,6 +2,19 @@ Web-Cite Backend API — README
 
 This backend powers Web-Cite, an application that allows users to search PubMed, select an article, and generate an interactive “citation web” that visualizes related publications using embedding-based similarity.
 
+
+npm install in both frontend/backend folders
+
+npm run dev in frontend
+
+
+
+
+
+
+
+
+
 Frontend teammates can use this document to understand:
 
 how to authenticate users
