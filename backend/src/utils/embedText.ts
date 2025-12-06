@@ -1,10 +1,14 @@
-import { pipeline } from "@xenova/transformers";
+//import { pipeline } from "@xenova/transformers"; //original import 
 
 // Load once, reuse for every request
 let embedder: any = null;
 
 async function loadEmbedder() {
   if (!embedder) {
+    /*changes to not get require() of ES Module not supported. Instead change the 
+    require of transformers.js to a dynamic import() which is available in all 
+    CommonJS modules.*/
+    const { pipeline } = await import("@xenova/transformers");
     embedder = await pipeline(
       "feature-extraction",
       "Xenova/all-MiniLM-L6-v2" // free, local, 384-dim embeddings

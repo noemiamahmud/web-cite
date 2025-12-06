@@ -239,7 +239,7 @@ export const createWebHandler = async (req: any, res: Response) => {
     res.json({ web });
   } catch (err) {
     console.error("createWebHandler error:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error", err });
   }
 };
 

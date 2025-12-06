@@ -21,7 +21,7 @@ function Search() {
         if (!query.trim()) return; 
         setError("");
         try{
-            const data = await publicFetch(`/api/search/articles?q=${query}`);
+            const data = await publicFetch(`/api/articles?q=${query}`);
             console.log("SEARCH RESPONSE:", data.results);
             setResult(data.results);
         } catch (error) {
