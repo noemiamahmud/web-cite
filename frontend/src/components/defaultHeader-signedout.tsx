@@ -1,5 +1,7 @@
 import './defaultHeader.css';
 import { useNavigate } from 'react-router-dom';
+import logo from './componentAssets/web-cite-logo.svg';
+import profileIcon from './componentAssets/gg--profile.png';
 
 export default function DefaultHeaderSignedOut() {
   const navigate = useNavigate(); 
@@ -10,14 +12,14 @@ export default function DefaultHeaderSignedOut() {
   return (
     <>
       <div className="Default-top">
-        <img id="Web-Cite-logo" src="/componentAssets/web-cite-logo.svg" alt="Logo" />
+        <img id="Web-Cite-logo" src={logo} alt="Logo" />
         <div className="right-side">
           <button id="login-link" onClick={handleLoginClick}>Login/Sign Up</button>
-          <img className="profile-icon" src="/componentAssets/gg--profile.png" alt="Profile Icon" />
+          <img className="profile-icon" src={profileIcon} alt="Profile Icon" />
         </div>
       </div>
 
-      <div className="Default-bottom">
+      {/* <div className="Default-bottom">
         <div className="search">
           <input type="text" placeholder="Search..." />
         </div>
@@ -25,7 +27,7 @@ export default function DefaultHeaderSignedOut() {
           <button>Search</button>
           
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
