@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/webs", webRoutes);
-app.use("/api", searchRoutes);        // ← YOU ARE MISSING THIS LINE
+app.use("/api", searchRoutes);      
 
 const PORT = process.env.PORT || 4000;
 
