@@ -9,13 +9,21 @@ export default function DefaultHeaderSignedOut() {
     navigate('/login');
   };
 
+  const handleHomeClick = () => {
+    navigate('/search');
+  }
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
   return (
     <>
       <div className="Default-top">
-        <img id="Web-Cite-logo" src={logo} alt="Logo" />
+        <img id="Web-Cite-logo" src={logo} alt="Logo" onClick={handleHomeClick}/>
         <div className="right-side">
           <button id="login-link" onClick={handleLoginClick}>Login/Sign Up</button>
-          <img className="profile-icon" src={profileIcon} alt="Profile Icon" />
+          <img className="profile-icon" src={profileIcon} alt="Profile Icon" onClick={handleProfileClick}/>
         </div>
       </div>
 
