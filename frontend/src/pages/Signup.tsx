@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { publicFetch } from "../api/apiClient";
+import "./parent.css";
+import "./login.css";
 
 function Signup() {
     const [username, setUsername] = useState('');
@@ -31,10 +33,10 @@ function Signup() {
     };
 
     return (
-        <div>
-            <h2> Sign Up</h2>
+        <div className="login-container">
+            <h2 className="heading"> Sign Up</h2>
             <form onSubmit={handleSubmit}>
-                <div> 
+                <div className="input-group"> 
                     <label htmlFor="email">Email:</label>
                     <input
                         type="email"
@@ -43,7 +45,7 @@ function Signup() {
                         onChange={(e) => setEmail(e.target.value)}
                         required />
                 </div>
-                <div> 
+                <div className="input-group"> 
                     <label htmlFor="username">Create User Name:</label>
                     <input
                         type="text"
@@ -52,7 +54,7 @@ function Signup() {
                         onChange={(e) => setUsername(e.target.value)}
                         required />
                 </div> 
-                <div> 
+                <div className="input-group"> 
                     <label htmlFor='password'>Create Password:</label>
                     <input
                         type="password"
@@ -62,7 +64,7 @@ function Signup() {
                         required />
                 </div> 
                 {error && <p className="error">{error}</p>}
-                <button type="submit">Sign Up</button>
+                <button className="buttons" id="login-button" type="submit">Sign Up</button>
             </form>
         </div>
     )

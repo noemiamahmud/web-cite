@@ -12,7 +12,6 @@ const ArticleSchema = new Schema(
       journal: String,
       year: Number,
   
-      // NEW
       embedding: { type: [Number], default: [] },
     },
     { timestamps: true }

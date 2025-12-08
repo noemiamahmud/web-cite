@@ -2,6 +2,9 @@ import { useState } from "react";
 //import { useNavigate } from "react-router-dom"; //ADD BACK FOR GOING TO WEBS
 import { publicFetch } from "../api/apiClient";
 import SearchResult from "../components/searchResult";
+import "./parent.css";
+import "./search.css";
+
 
 type ArticleResult = {
     pmid: string; 
@@ -33,12 +36,12 @@ function Search() {
     return(
         <div className="article-search">
             <form onSubmit={handleSearch}>
-                <input
+                <input className="search-input"
                     type="text"
                     placeholder="Search..."
                     value={query}
                     onChange={(e)=> setQuery(e.target.value)} /> 
-            <button type="submit">Search</button>
+            <button className="search-button" type="submit">Search</button>
             </form>
             {error && <p className="error">{error}</p>}
             <div className="search-results">
