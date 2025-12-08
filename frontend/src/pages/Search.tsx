@@ -2,6 +2,7 @@ import { useState } from "react";
 //import { useNavigate } from "react-router-dom"; //ADD BACK FOR GOING TO WEBS
 import { publicFetch } from "../api/apiClient";
 import SearchResult from "../components/searchResult";
+import { Link } from "react-router-dom";
 import "./parent.css";
 import "./search.css";
 
@@ -46,11 +47,11 @@ function Search() {
             {error && <p className="error">{error}</p>}
             <div className="search-results">
                 {result.map((article) => (
-                    <div key={article.pmid}>
+                    <Link key={article.pmid} to={`/article/${article.pmid}`} state={{article}}>
                         <SearchResult
                             pmid={article.pmid}
                             title={article.title} />
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>
