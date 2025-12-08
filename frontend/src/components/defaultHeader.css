@@ -8,6 +8,17 @@ body {
     width: 100%;
 }
 
+img#Web-Cite-logo {
+    height: 40px;
+    cursor: pointer;
+}
+
+img.profile-icon {
+    height: 30px;
+    margin-left: 15px;
+    cursor: pointer;
+}
+
 .Default-top {
     display: flex;
     justify-content: space-between;

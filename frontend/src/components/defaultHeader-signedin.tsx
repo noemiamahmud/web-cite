@@ -13,7 +13,7 @@ export default function DefaultHeaderSignedIn() {
         </div>
       </div>
 
-      <div className="Default-bottom">
+      {/* <div className="Default-bottom">
         <div className="search">
           <input type="text" placeholder="Search..." />
         </div>
@@ -21,7 +21,7 @@ export default function DefaultHeaderSignedIn() {
           <button>Search</button>
           
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
