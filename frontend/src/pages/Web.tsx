@@ -1,45 +1,53 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { authFetch } from "../api/apiClient";
 
 function Web() {
-    const { pmid } = useParams();
-    const [webData, setWebData] = useState<any>(null);
-    const [error, setError] = useState("");
+  const { pmid } = useParams();
+  const navigate = useNavigate();
+  const [webData, setWebData] = useState<any>(null);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        async function fetchWeb() {
-            if (!pmid) return;
-            try {
-                const payload = {
-                    rootPmid: pmid, 
-                    title: `Web for PMID ${pmid}`, 
-                }
-                console.log("payload", payload);
-                const data = await authFetch("/api/webs", {
-                    method: "POST",
-                    body: JSON.stringify(payload),
-                });
-                console.log("Fetched web data:", data);
-                setWebData(data.web);
-            } catch (err) {
-                console.error("Error fetching web:", err);
-                setError("Failed to fetch web");
-            }
-        }
+  useEffect(() => {
+    async function fetchWeb() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
 
-        fetchWeb();
-    }, [pmid]);
+      if (!pmid) return;
 
-    if (error) return <p>{error}</p>;
-    if (!webData) return <p>No data returned</p>;
+      try {
+        const payload = {
+          rootPmid: pmid,
+          title: `Web for PMID ${pmid}`,
+        };
 
-    return (
+        const data = await authFetch("/api/webs", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+
+        setWebData(data); // ✅ FIXED HERE
+      } catch (err) {
+        console.error("Error creating web:", err);
+        setError("Failed to generate web");
+      }
+    }
+
+    fetchWeb();
+  }, [pmid, navigate]);
+
+  if (error) return <p>{error}</p>;
+  if (!webData) return <p>Generating web...</p>;
+
+  return (
     <div>
-      <h2>Web Data for PMID: {pmid}</h2>
+      <h2>{webData.title}</h2>
       <pre>{JSON.stringify(webData, null, 2)}</pre>
     </div>
-    );
+  );
 }
 
 export default Web;
