@@ -15,7 +15,6 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/webs", webRoutes);
-<<<<<<< HEAD
 app.use("/api", searchRoutes);       
 
 const PORT = process.env.PORT || 4000;
