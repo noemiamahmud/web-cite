@@ -16,6 +16,10 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+
+// --- HEALTH CHECK AT TOP ---
+app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+
 app.use(cookieParser());
 app.use(morgan("dev"));
 
@@ -26,15 +30,15 @@ app.use(
   })
 );
 
-// ✅ HEALTH CHECK (NOW GUARANTEED TO EXIST)
-app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
-
-// ✅ ROUTES (NOW MATCH FRONTEND)
+// --- ROUTES ---
 app.use("/api/auth", authRoutes);
-app.use("/api", searchRoutes);     // /api/articles
+app.use("/api", searchRoutes);      // /api/articles
 app.use("/api/webs", webRoutes);
 
 app.use(errorHandler);
+
+// --- MONGO + SERVER START ---
+mongoose.set("strictQuery", false);
 
 const PORT = process.env.PORT || 4000;
 

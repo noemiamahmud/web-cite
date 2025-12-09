@@ -1,0 +1,23 @@
+# ---------------------------------------------------------
+# GitLab Pages for Vite (React-TS)
+# ---------------------------------------------------------
+image: node:18
+
+pages:
+  cache:
+    paths:
+      - node_modules/
+
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+    - mkdir -p ../public
+    - cp -r dist/* ../public/
+
+  artifacts:
+    paths:
+      - public
+
+  only:
+    - main
