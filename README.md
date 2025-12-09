@@ -1,3 +1,5 @@
+[📄 Pitch Deck](https://github.com/sgjohnson455/Web-Cite/blob/main/409%20Pitch%20Deck.pdf)
+
 ### Problem Statement + Motivation: 
 *How can we make the research process faster and easier for users?*
 - **Problem Statement**: Students and researchers might spend hours looking for academic writings to use for their research. This process often requires them to create multiple searches with various keywords, and can be time-consuming, repetitive, and difficult to organize. 
