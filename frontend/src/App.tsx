@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Web from "./pages/Web";
 import MyWebs from "./pages/MyWebs";
+import Profile from "./pages/profile";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/web/:webId" element={<Web />} />
         <Route path="/my-webs" element={<MyWebs />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );

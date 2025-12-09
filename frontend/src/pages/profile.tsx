@@ -1,5 +1,4 @@
 import defaultProfile from '../components/componentassets/gg--profile.png';
-import "./parent.css";
 import "./profile.css";
 
 function Profile() {

@@ -4,6 +4,8 @@ import { authFetch } from "../api/apiClient";
 import ReactFlow from "reactflow";
 import type { Node, Edge } from "reactflow";
 import { autoLayout } from "../utils/autoLayout";
+import "./web.css";
+
 function Web() {
   const { webId } = useParams();
   const navigate = useNavigate();
@@ -109,7 +111,7 @@ function Web() {
 
   return (
     <div style={{ width: "100vw", height: "90vh" }}>
-      <h2 style={{ textAlign: "center" }}>{title}</h2>
+      <h2 className="web-header">{title}</h2>
 
       <ReactFlow
         nodes={nodes}

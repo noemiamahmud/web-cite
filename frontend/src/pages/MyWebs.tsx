@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authFetch } from "../api/apiClient";
+import "./MyWebs.css";
 
 type SavedWeb = {
   _id: string;
@@ -36,42 +37,28 @@ function MyWebs() {
   if (!webs.length)
     return <p style={{ textAlign: "center" }}>You haven’t created any webs yet.</p>;
 
-  return (
-    <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "2rem" }}>My Saved Webs</h2>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        {webs.map((web) => (
-          <div
-            key={web._id}
-            onClick={() => navigate(`/web/${web._id}`)}
-            style={{
-              cursor: "pointer",
-              padding: "1.25rem",
-              borderRadius: "10px",
-              border: "1px solid #ccc",
-              background: "#fff",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            }}
-          >
-            <h3 style={{ marginBottom: "0.5rem" }}>{web.title}</h3>
-
-            {web.description && (
-              <p style={{ color: "#555", marginBottom: "0.5rem" }}>
-                {web.description}
-              </p>
-            )}
-
-            {web.createdAt && (
-              <small style={{ color: "#999" }}>
-                Created: {new Date(web.createdAt).toLocaleDateString()}
-              </small>
-            )}
+    return (
+      <div className="mywebs-container">
+          <h2>My Saved Webs</h2>
+    
+          <div className="web-list">
+            {webs.map(web => (
+              <div 
+                key={web._id}
+                className="web-card"
+                onClick={() => navigate(`/web/${web._id}`)}
+              >
+                <h3>{web.title}</h3>
+                {web.description && <p>{web.description}</p>}
+                {web.createdAt && (
+                  <small>Created: {new Date(web.createdAt).toLocaleDateString()}</small>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
       </div>
-    </div>
-  );
+    );
+    
 }
 
 export default MyWebs;

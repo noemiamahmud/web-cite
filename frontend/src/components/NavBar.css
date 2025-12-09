@@ -1,0 +1,90 @@
+/* NAVBAR WRAPPER */
+.navbar {
+    width: 100%;
+    padding: 0.75rem 2rem;
+    background-color: #f1f3f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #d5dbe3;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-family: 'Public Sans', sans-serif;
+}
+
+/* LEFT SIDE (LOGO) */
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-logo img {
+    height: 40px;
+}
+
+.navbar-logo-text {
+    font-size: 1.8rem;
+    font-family: 'Playfair Display', serif;
+    color: #15335C;
+}
+
+/* RIGHT SIDE BUTTON GROUP */
+.navbar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* BASE BUTTON STYLE */
+.nav-btn {
+    padding: 8px 18px;
+    border-radius: 25px;
+    border: 2px solid #15335C;
+    background-color: white;
+    color: #15335C;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.nav-btn:hover {
+    background-color: #FC9F32;
+    color: black;
+    border-color: #FC9F32;
+}
+
+/* PRIMARY BUTTON STYLE (for things like Search, Save, etc.) */
+.nav-btn-primary {
+    background-color: #15335C;
+    color: white;
+}
+
+.nav-btn-primary:hover {
+    background-color: #FC9F32;
+    color: black;
+}
+
+/* PROFILE ICON BUTTON */
+.profile-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #15335C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.profile-icon-btn:hover {
+    background-color: #FC9F32;
+}
+
+.profile-icon-btn img,
+.profile-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    filter: invert(100%);
+}
