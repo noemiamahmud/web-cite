@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import "./searchResult.css";
 import { authFetch } from "../api/apiClient";
 
-
-
-
 interface ResultValues {
   pmid: string;
   title: string;
@@ -13,6 +10,10 @@ interface ResultValues {
 
 const SearchResult: React.FC<ResultValues> = ({ pmid, title }) => {
   const navigate = useNavigate();
+
+  const handleArticleClick = () => {
+    navigate(`/article/${pmid}`, { state: {pmid, title}});
+  };
 
   const handleWebClick = async () => {
     try {
@@ -50,7 +51,7 @@ const SearchResult: React.FC<ResultValues> = ({ pmid, title }) => {
 
   return (
     <div className="result_view">
-      <div className="article-card">
+      <div className="article-card" onClick={handleArticleClick}>
         <h3>{title}</h3>
       </div>
 
