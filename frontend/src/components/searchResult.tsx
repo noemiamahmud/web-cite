@@ -1,6 +1,9 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
 import "./searchResult.css";
+import { authFetch } from "../api/apiClient";
+
+
 
 
 interface ResultValues {
