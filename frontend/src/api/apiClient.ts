@@ -3,6 +3,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 // ✅ Public (no auth required)
 export async function publicFetch(path: string, options: RequestInit = {}) {
   const res = await fetch(`${API_URL}${path}`, {
+    credentials: "include",
     ...options,
     headers: {
       "Content-Type": "application/json",
