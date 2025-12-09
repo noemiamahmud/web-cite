@@ -1,4 +1,4 @@
-import "./defaultHeader.css";      // keep this if other styles depend on it
+// import "./defaultHeader.css";      // keep this if other styles depend on it
 import "./NavBar.css";             // new navbar styles
 
 
