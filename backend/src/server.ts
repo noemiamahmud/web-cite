@@ -25,13 +25,25 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://web-cite.vercel.app"
-    ],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow mobile / curl
+
+      const allowed = [
+        "http://localhost:5173",
+        /\.vercel\.app$/,
+      ];
+
+      if (allowed.some((pattern) => pattern instanceof RegExp ? pattern.test(origin) : pattern === origin)) {
+        callback(null, true);
+      } else {
+        console.log("❌ CORS BLOCKED:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
 
 
 

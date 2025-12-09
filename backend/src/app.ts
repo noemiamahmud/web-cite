@@ -18,10 +18,14 @@ app.use(morgan("dev"));
 // Allow frontend to connect
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://web-cite.vercel.app"   // ← your live frontend
+    ],
     credentials: true,
   })
 );
+
 
 // Health-check
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
