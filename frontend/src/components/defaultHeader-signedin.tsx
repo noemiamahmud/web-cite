@@ -25,6 +25,7 @@ export default function DefaultHeaderSignedIn() {
         <button
           className="nav-btn"
           type="button"
+          id="login-link
           onClick={() => navigate("/my-webs")}
         >
           My Webs
@@ -32,6 +33,7 @@ export default function DefaultHeaderSignedIn() {
 
         <button
           className="nav-btn"
+          id="login-link
           type="button"
           onClick={handleLogout}
         >
