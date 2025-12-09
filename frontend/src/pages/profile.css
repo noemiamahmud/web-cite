@@ -1,0 +1,50 @@
+.profile-page {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 40px 0;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    text-align: center;
+    color: #15335C;
+    font-size: 2.3em;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+}
+
+.user-info img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+}
+
+.user-content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+}
+
+.user-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

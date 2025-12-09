@@ -1,6 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { authFetch } from "../api/apiClient";
+import { useNavigate } from 'react-router-dom';
+import "./searchResult.css";
+
 
 interface ResultValues {
   pmid: string;
