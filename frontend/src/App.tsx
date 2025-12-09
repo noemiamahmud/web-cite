@@ -9,7 +9,7 @@ import './App.css'
 import Search from './pages/Search';
 import Web from './pages/Web';
 import 'reactflow/dist/style.css';
-
+import MyWebs from "./pages/MyWebs";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,6 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} /> 
           <Route path="/signup" element={<Signup />} /> 
           <Route path="/web/:webId" element={<Web />} />
+          <Route path="/my-webs" element={<MyWebs />} />
         </Routes>
       </Router>
     </div>
