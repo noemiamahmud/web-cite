@@ -1,53 +1,61 @@
 import "./defaultHeader.css";      // keep this if other styles depend on it
 import "./NavBar.css";             // new navbar styles
 
+
 import { useNavigate } from "react-router-dom";
 import logo from "./componentAssets/web-cite-logo.svg";
 import profileIcon from "./componentAssets/gg--profile.png";
 
+
 export default function DefaultHeaderSignedIn() {
-  const navigate = useNavigate();
+ const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
 
-  return (
-    <header className="navbar">
-      {/* LEFT: logo → home/search */}
-      <div className="navbar-logo" onClick={() => navigate("/")}>
-        <img id="Web-Cite-logo" src={logo} alt="Web-Cite Logo" />
-      </div>
+ const handleLogout = () => {
+   localStorage.removeItem("token");
+   navigate("/login");
+ };
 
-      {/* RIGHT: buttons */}
-      <div className="navbar-buttons">
-        <button
-          className="nav-btn"
-          type="button"
-          id="login-link
-          onClick={() => navigate("/my-webs")}
-        >
-          My Webs
-        </button>
 
-        <button
-          className="nav-btn"
-          id="login-link
-          type="button"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+ return (
+   <header className="navbar">
+     {/* LEFT: logo → home/search */}
+     <div className="navbar-logo" onClick={() => navigate("/")}>
+       <img id="Web-Cite-logo" src={logo} alt="Web-Cite Logo" />
+     </div>
 
-        <button
-          type="button"
-          className="profile-icon-btn"
-          onClick={() => navigate("/profile")}
-        >
-          <img className="profile-icon" src={profileIcon} alt="Profile Icon" />
-        </button>
-      </div>
-    </header>
-  );
+
+     {/* RIGHT: buttons */}
+     <div className="navbar-buttons">
+       <button
+         className="nav-btn"
+         type="button"
+         onClick={() => navigate("/my-webs")}
+       >
+         My Webs
+       </button>
+
+
+       <button
+         className="nav-btn"
+         type="button"
+         onClick={handleLogout}
+       >
+         Logout
+       </button>
+
+
+       <button
+         type="button"
+         className="profile-icon-btn"
+         onClick={() => navigate("/profile")}
+       >
+         <img className="profile-icon" src={profileIcon} alt="Profile Icon" />
+       </button>
+     </div>
+   </header>
+ );
 }
+
+
+
