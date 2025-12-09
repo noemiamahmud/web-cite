@@ -8,6 +8,8 @@ import Signup from './pages/Signup';
 import './App.css' 
 import Search from './pages/Search';
 import Web from './pages/Web';
+import 'reactflow/dist/style.css';
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -20,7 +22,7 @@ function App() {
           <Route path="/" element={<Search />} />
           <Route path="/login" element={<Login />} /> 
           <Route path="/signup" element={<Signup />} /> 
-          <Route path="/web/:pmid" element={<Web />} />
+          <Route path="/web/:webId" element={<Web />} />
         </Routes>
       </Router>
     </div>
