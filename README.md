@@ -28,9 +28,14 @@
 - The similar applications we have also do not allow for **user editing and customization of the webs created.** 
 - There are tools for creating thought maps and webs. The ones we found all required users to build them but none that automatically **searched - for sources relating to the topics and created webs** that users can then change. 
 
-[📄 Project Proposal Write-Up](https://docs.google.com/document/d/1hLgzCbc-nDkBnnP68vQA_iN2SS_Tl1mg2DXhaPwg780/edit?usp=sharing)
+Contributors:
 
+Noemi Mahmud
+Sara Johnson
+Taisia Kalinina
+Abigail Chen
 
+---
 
 Web-Cite Backend API — README
 
