@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { authFetch } from "../api/apiClient";
 import ReactFlow from "reactflow";
 import type { Node, Edge } from "reactflow";
-
+import { autoLayout } from "../utils/autoLayout";
 function Web() {
   const { webId } = useParams();
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ function Web() {
           label: e.relation || "",
         }));
 
-        setNodes(rfNodes);
+        setNodes(autoLayout(rfNodes, rfEdges));
         setEdges(rfEdges);
       } catch (err) {
         console.error("Failed to load web:", err);
@@ -90,9 +90,11 @@ function Web() {
         setNodes((prev) => {
           const existingIds = new Set(prev.map((n) => n.id));
           const filtered = newNodes.filter((n) => !existingIds.has(n.id));
-          return [...prev, ...filtered];
+        
+          const combined = [...prev, ...filtered];
+          return autoLayout(combined, [...edges, ...newEdges]);
         });
-  
+        
         setEdges((prev) => [...prev, ...newEdges]);
       } catch (err) {
         console.error("Node expansion failed:", err);
