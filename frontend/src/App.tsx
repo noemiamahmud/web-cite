@@ -27,6 +27,7 @@ function App() {
           <Route path="/signup" element={<Signup />} /> 
           <Route path="/web/:pmid" element={<Web />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/Login" element={<Login />} />
           <Route path="/Search" element={<Search />} />
         </Routes>
       </Router>

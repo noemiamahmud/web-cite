@@ -5,6 +5,7 @@ import profileIcon from "./componentAssets/gg--profile.png";
 
 export default function DefaultHeaderSignedOut() {
   const navigate = useNavigate();
+  
 
   return (
     <div className="Default-top">
@@ -21,7 +22,7 @@ export default function DefaultHeaderSignedOut() {
         <button id="login-link" onClick={() => navigate("/login")}>
           Login / Sign Up
         </button>
-        <img className="profile-icon" src={profileIcon} alt="Profile Icon" />
+        <img className="profile-icon" src={profileIcon} alt="Profile Icon" onClick={() => navigate("/login")}/>
       </div>
     </div>
   );
