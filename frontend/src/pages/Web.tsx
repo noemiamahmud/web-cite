@@ -60,32 +60,39 @@ function Web() {
   const handleNodeClick = useCallback(
     async (_: any, node: Node) => {
       try {
-        const children = await authFetch(`/api/webs/${webId}/expand`, {
+        const res = await authFetch(`/api/webs/${webId}/expand`, {
           method: "POST",
           body: JSON.stringify({
-            nodePmid: node.data.label,
+            nodePmid: node.id, // ✅ MUST BE PMID / ID — NOT LABEL
           }),
         });
-
-        const newNodes: Node[] = children.children.map((child: any, i: number) => ({
+  
+        const newNodes: Node[] = res.children.map((child: any, i: number) => ({
           id: child._id,
           position: {
-            x: node.position.x + 200 + i * 120,
-            y: node.position.y + 200,
+            x: node.position.x + 240,
+            y: node.position.y + i * 140,
           },
           data: {
             label: child.title || child.pmid,
           },
+          type: "default",
         }));
-
-        const newEdges: Edge[] = children.children.map((child: any) => ({
+  
+        const newEdges: Edge[] = res.children.map((child: any) => ({
           id: `${node.id}-${child._id}`,
           source: node.id,
           target: child._id,
           label: "similarity",
         }));
-
-        setNodes((prev) => [...prev, ...newNodes]);
+  
+        // ✅ De-duplicate nodes so ReactFlow never crashes
+        setNodes((prev) => {
+          const existingIds = new Set(prev.map((n) => n.id));
+          const filtered = newNodes.filter((n) => !existingIds.has(n.id));
+          return [...prev, ...filtered];
+        });
+  
         setEdges((prev) => [...prev, ...newEdges]);
       } catch (err) {
         console.error("Node expansion failed:", err);
@@ -93,6 +100,7 @@ function Web() {
     },
     [webId]
   );
+  
 
   if (error) return <p>{error}</p>;
   if (!nodes.length) return <p>Loading graph...</p>;
