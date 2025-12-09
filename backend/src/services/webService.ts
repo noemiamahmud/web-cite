@@ -3,13 +3,14 @@ import Web from "../models/Web";
 import Article from "../models/Article";
 import axios from "axios";
 
-// your local embedding utilities in /utils
 import { embedText } from "../utils/embedText";
 import { cosineSimilarity } from "../utils/similarity";
 
 const BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
-// NCBI rate-limit friendly params
-const NCBI_PARAMS = "&tool=webcite&email=noemiamahmud@gmail.com";
+const NCBI_PARAMS =
+  `&tool=webcite&email=noemiamahmud@gmail.com` +
+  (process.env.NCBI_API_KEY ? `&api_key=${process.env.NCBI_API_KEY}` : "");
+
 
 // ---------------- TYPES ----------------
 
@@ -30,14 +31,25 @@ function matchTag(xml: string, tag: string): string | undefined {
   const match = xml.match(regex);
   return match ? match[1].trim() : undefined;
 }
+async function safeNcbiGet(url: string, retry = 0): Promise<any> {
+  try {
+    return await axios.get(url);
+  } catch (err: any) {
+    if (err?.response?.status === 429 && retry < 3) {
+      console.warn("⚠️ NCBI rate-limited. Retrying in 1.5s...");
+      await new Promise((r) => setTimeout(r, 1500));
+      return safeNcbiGet(url, retry + 1);
+    }
+
+    throw err;
+  }
+}
 
 async function fetchArticleMeta(pmid: string): Promise<ArticleMeta | null> {
   const url = `${BASE}/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=${pmid}${NCBI_PARAMS}`;
-
-  const response = await axios.get(url);
+  const response = await safeNcbiGet(url);
   const xml = response.data as string;
 
-  // ----- title -----
   const title =
     matchTag(xml, "ArticleTitle") ||
     matchTag(xml, "BookTitle") ||
@@ -45,27 +57,22 @@ async function fetchArticleMeta(pmid: string): Promise<ArticleMeta | null> {
 
   if (!title) return null;
 
-  // ----- abstract -----
   const abstract =
     matchTag(xml, "AbstractText") ||
     matchTag(xml, "Abstract") ||
     "";
 
-  // ----- journal -----
   const journal =
     matchTag(xml, "FullJournalName") ||
     matchTag(xml, "Title") ||
     undefined;
 
-  // ----- year -----
   const yearStr = matchTag(xml, "Year");
   const year = yearStr ? Number(yearStr) : undefined;
 
-  // ----- keywords -----
   const keywordMatches = [...xml.matchAll(/<Keyword[^>]*>(.*?)<\/Keyword>/g)];
   const keywords = keywordMatches.map((m) => m[1].trim());
 
-  // ----- mesh terms -----
   const meshMatches = [
     ...xml.matchAll(
       /<MeshHeading>[\s\S]*?<DescriptorName[^>]*>(.*?)<\/DescriptorName>[\s\S]*?<\/MeshHeading>/g
@@ -89,13 +96,21 @@ async function fetchArticleMeta(pmid: string): Promise<ArticleMeta | null> {
 async function ensureArticleWithEmbedding(pmid: string) {
   let article: any = await Article.findOne({ pmid });
 
-  // already stored with embedding
   if (article && Array.isArray(article.embedding) && article.embedding.length) {
     return article;
   }
 
-  const meta = await fetchArticleMeta(pmid);
-  if (!meta) return null;
+  let meta: ArticleMeta | null = null;
+
+try {
+  meta = await fetchArticleMeta(pmid);
+} catch (err) {
+  console.warn("⚠️ PubMed fetch failed for", pmid);
+  return null; // ✅ DO NOT CRASH THE WEB
+}
+
+if (!meta) return null;
+
 
   const textForEmbedding = [
     meta.title || "",
@@ -109,7 +124,6 @@ async function ensureArticleWithEmbedding(pmid: string) {
   const embedding = await embedText(textForEmbedding);
 
   if (!article) {
-    // create
     article = await Article.create({
       pmid: meta.pmid,
       title: meta.title,
@@ -123,7 +137,6 @@ async function ensureArticleWithEmbedding(pmid: string) {
       embedding,
     });
   } else {
-    // update
     article.title = meta.title;
     article.abstract = meta.abstract;
     article.journal = meta.journal;
@@ -145,7 +158,6 @@ async function searchCandidatePmids(meta: ArticleMeta): Promise<string[]> {
   if (meta.keywords.length) terms.push(...meta.keywords);
   if (meta.meshTerms.length) terms.push(...meta.meshTerms);
 
-  // fallback: use title words
   if (terms.length === 0) {
     terms.push(...meta.title.split(/\s+/).slice(0, 8));
   }
@@ -159,12 +171,10 @@ async function searchCandidatePmids(meta: ArticleMeta): Promise<string[]> {
   );
 
   let ids: string[] = search.data?.esearchresult?.idlist || [];
-  ids = ids.filter((id) => id !== meta.pmid).slice(0, 15);
+  ids = ids.filter((id) => id !== meta.pmid).slice(0, 20);
 
   return ids;
 }
-
-// ---------------- SIMILARITY VIA LOCAL EMBEDDING ----------------
 
 async function findSimilarArticlesByEmbedding(root: any, meta: ArticleMeta) {
   if (!root.embedding || !Array.isArray(root.embedding)) return [];
@@ -183,27 +193,116 @@ async function findSimilarArticlesByEmbedding(root: any, meta: ArticleMeta) {
 
   scored.sort((a, b) => b.score - a.score);
 
-  return scored.slice(0, 4).map((s) => s.article);
+  return scored.slice(0, 5).map((s) => s.article);
 }
 
-// ---------------- HANDLERS ----------------
+// ---------------- CREATE WEB (ROOT + 5 SIMILAR) ----------------
 
 export const createWebHandler = async (req: any, res: Response) => {
   try {
     const { rootPmid, title, description } = req.body;
 
     if (!rootPmid || !title) {
-      return res
-        .status(400)
-        .json({ error: "rootPmid and title are required" });
+      return res.status(400).json({ error: "rootPmid and title are required" });
     }
 
-    const root = await ensureArticleWithEmbedding(rootPmid);
-    if (!root) {
-      return res.status(404).json({
-        error: `Could not fetch PubMed article for PMID '${rootPmid}'`,
-      });
+    let root = await ensureArticleWithEmbedding(rootPmid);
+
+if (!root) {
+  console.warn("⚠️ Root embedding failed — fetching minimal article...");
+
+  const fetch = await safeNcbiGet(
+    `${BASE}/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=${rootPmid}${NCBI_PARAMS}`
+  );
+
+  const xml = fetch.data;
+  const titleMatch = xml.match(/<ArticleTitle>(.*?)<\/ArticleTitle>/)?.[1] || "";
+  const abstractMatch =
+    xml.match(/<Abstract>([\s\S]*?)<\/Abstract>/)?.[1] || "";
+
+  root = await Article.create({
+    pmid: rootPmid,
+    title: titleMatch,
+    abstract: abstractMatch,
+    source: "pubmed",
+    embedding: [], // ✅ placeholder
+  });
+}
+
+
+    const meta: ArticleMeta = {
+      pmid: root.pmid,
+      title: root.title || "",
+      abstract: root.abstract || "",
+      journal: root.journal || undefined,
+      year: root.year || undefined,
+      keywords: root.keywords || [],
+      meshTerms: root.meshTerms || [],
+    };
+
+    let similarDocs = await findSimilarArticlesByEmbedding(root, meta);
+
+    // HARD FLOOR: ALWAYS AT LEAST 5
+    if (similarDocs.length < 5) {
+      const fallback = await searchCandidatePmids(meta);
+
+      for (const pmid of fallback) {
+        if (similarDocs.length >= 5) break;
+        const extra = await ensureArticleWithEmbedding(pmid);
+        if (extra && !similarDocs.find(d => d._id.equals(extra._id))) {
+          similarDocs.push(extra);
+        }
+      }
     }
+
+    const nodes = [
+      { article: root._id, position: { x: 0, y: 0 } },
+      ...similarDocs.map((a, i) => ({
+        article: a._id,
+        position: { x: 200 + i * 150, y: 200 },
+      })),
+    ];
+
+    const edges = similarDocs.map((a) => ({
+      from: root._id,
+      to: a._id,
+      relation: "similarity",
+    }));
+
+    const web = await Web.create({
+      owner: req.userId,
+      title,
+      description,
+      rootArticle: root._id,
+      nodes,
+      edges,
+    });
+
+    res.json({ web });
+  } catch (err: any) {
+    console.error("🔥🔥🔥 FULL createWebHandler ERROR:");
+    console.error(err);
+    console.error("🔥 MESSAGE:", err?.message);
+    console.error("🔥 STACK:", err?.stack);
+  
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: err?.message,
+      stack: err?.stack,
+    });
+  }
+  
+  
+};
+
+// ---------------- EXPAND NODE ----------------
+
+export const expandNodeHandler = async (req: any, res: Response) => {
+  try {
+    const { nodePmid } = req.body;
+
+    const root = await ensureArticleWithEmbedding(nodePmid);
+    if (!root) return res.status(404).json({ error: "Article not found" });
 
     const meta: ArticleMeta = {
       pmid: root.pmid,
@@ -217,31 +316,14 @@ export const createWebHandler = async (req: any, res: Response) => {
 
     const similarDocs = await findSimilarArticlesByEmbedding(root, meta);
 
-    const nodes = [
-      { article: root._id },
-      ...similarDocs.map((a) => ({ article: a._id })),
-    ];
-
-    const edges = similarDocs.map((a) => ({
-      from: root._id,
-      to: a._id,
-    }));
-
-    const web = await Web.create({
-      owner: req.userId,
-      title,
-      description,
-      rootArticle: root._id,
-      nodes,
-      edges,
-    });
-
-    res.json({ web });
+    res.json({ children: similarDocs });
   } catch (err) {
-    console.error("createWebHandler error:", err);
-    res.status(500).json({ error: "Internal Server Error", err });
+    console.error("expandNodeHandler error:", err);
+    res.status(500).json({ error: "Expansion failed" });
   }
 };
+
+// ---------------- STANDARD CRUD ----------------
 
 export const listWebsHandler = async (req: any, res: Response) => {
   const webs = await Web.find({ owner: req.userId }).populate("rootArticle");

@@ -25,15 +25,18 @@ export default function DefaultHeaderSignedIn() {
         </div>
       </div>
 
-      {/* <div className="Default-bottom">
-        <div className="search">
-          <input type="text" placeholder="Search..." />
-        </div>
-        <div className="default-buttons">
-          <button>Search</button>
-          
-        </div>
-      </div> */}
-    </>
+        {/* ✅ LOGOUT */}
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            navigate("/login");
+          }}
+        >
+          Logout
+        </button>
+
+        <img className="profile-icon" src={profileIcon} alt="Profile Icon" />
+      </div>
+    </div>
   );
 }
