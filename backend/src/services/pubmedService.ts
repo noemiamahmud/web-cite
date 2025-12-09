@@ -29,13 +29,20 @@ export const searchArticlesHandler = async (req: Request, res: Response) => {
 
   const results = Object.values(summary.data.result)
     .filter((x: any) => typeof x === "object" && x.uid)
-    .map((item: any) => ({
-      pmid: item.uid,
-      title: item.title,
-      authors: item.authors?.map((a: any) => a.name) || [],
-      journal: item.fulljournalname,
-      year: item.pubdate?.slice(0, 4),
-    }));
+    .map((item: any) => {
+      const pmcidObj = item.articleids?.find(
+        (id: any) => id.idtype === "pmc"
+      );
+      const pmcid = pmcidObj ? pmcidObj.value : null;
+      return {
+        pmid: item.uid,
+        pmcid,
+        title: item.title,
+        authors: item.authors?.map((a: any) => a.name) || [],
+        journal: item.fulljournalname,
+        year: item.pubdate?.slice(0, 4),
+      };
+    });
 
   res.json({ results });
 };
@@ -55,9 +62,16 @@ export const getArticleHandler = async (req: Request, res: Response) => {
 
   const title = xml.match(/<ArticleTitle>(.*?)<\/ArticleTitle>/)?.[1] || "";
   const abstract = xml.match(/<Abstract>([\s\S]*?)<\/Abstract>/)?.[1] || "";
+  //extracting more info for ArticleView 
+  const pmcidMatch = xml.match(/<ArticleId IdType="pmc">(PMC\d+)<\/ArticleId>/);
+  const pmcid = pmcidMatch ? pmcidMatch[1]: null; 
+  const canFullText = !!pmid; 
+
 
   const newArticle = await Article.create({
     pmid,
+    pmcid, 
+    canFullText,
     title,
     abstract,
     source: "pubmed",
@@ -81,6 +95,9 @@ export async function fetchArticleByPmid(pmid: string) {
       const journal = extractXml(xml, "Title");
       const pubDate = extractXml(xml, "PubDate");
       const year = pubDate ? pubDate.slice(0, 4) : undefined;
+      //full text fields 
+      const pmcidMatch = xml.match(/<ArticleId IdType="pmc">(PMC\d+)<\/ArticleId>/);
+      const pmcid = pmcidMatch ? pmcidMatch[1] : null;
   
       // If PubMed returns nothing (invalid PMID)
       if (!title) {
@@ -89,6 +106,8 @@ export async function fetchArticleByPmid(pmid: string) {
   
       return {
         pmid,
+        pmcid,
+        canFullText: !!pmcid,
         title,
         abstract,
         journal,
@@ -103,5 +122,19 @@ export async function fetchArticleByPmid(pmid: string) {
       return null;
     }
   }
-  
-  
+
+//Fetching article full text (when legal to do so)
+export const getFullTextByPmcid = async (req: Request, res: Response) => {
+  try {
+    const { pmcid } = req.params;
+    const url = `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/?format=xml`;
+    const response = await axios.get(url);
+    res.json({
+      pmcid, 
+      xml: response.data
+    });
+  } catch (error) {
+    console.error("Backend PMC full text fetch failed: ", error);
+    res.status(500).json({error: "Failed to fetch full text"});
+  }
+}
