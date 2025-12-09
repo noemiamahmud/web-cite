@@ -1,3 +1,35 @@
+### Problem Statement + Motivation: 
+*How can we make the research process faster and easier for users?*
+- **Problem Statement**: Students and researchers might spend hours looking for academic writings to use for their research. This process often requires them to create multiple searches with various keywords, and can be time-consuming, repetitive, and difficult to organize. 
+- **Motivation**: By developing an environment where students and researchers can find, save, and navigate through keywords in academic papers, the process of searching for research papers is quicker, more efficient, and less overwhelming. 
+
+### User Problems we Target:
+- Research and webpage clutter → Improving the workflow of finding academic papers of similar topics
+- Organization Issues → Creating a space where users can keep display of these papers in a map/web-type structure
+- Relevancy and Similar Research → Help users understand and organize connections between similar research papers. 
+
+### Basic interactions in Service of Our Goal:
+- Research paper database for API’s
+- Static nav bar to instantly scroll to sections of the paper/relevant figures
+- The ability to see every spot in a paper where a source is referenced
+  - And see other papers which utilize a specific paper/source
+- Users will be able to save papers that they read and organize them in their account for reference
+- Users can create and save their own keyword webs connecting papers for their projects.
+
+### Similar Apps:
+- **EBSCO** - Research paper database
+- **PubMed** - Research paper database
+- **GetLiner** - Searches through research paper with prompts
+
+### What Makes Our App Different:
+- While there are applications that create webs of sources for specific keywords and topics, we were not able to find an application which **creates source maps for any keywords chosen by the user.** 
+- The similar applications we have also do not allow for **user editing and customization of the webs created.** 
+- There are tools for creating thought maps and webs. The ones we found all required users to build them but none that automatically **searched - for sources relating to the topics and created webs** that users can then change. 
+
+[📄 Project Proposal Write-Up](https://docs.google.com/document/d/1hLgzCbc-nDkBnnP68vQA_iN2SS_Tl1mg2DXhaPwg780/edit?usp=sharing)
+
+
+
 Web-Cite Backend API — README
 
 This backend powers Web-Cite, an application that allows users to search PubMed, select an article, and generate an interactive “citation web” that visualizes related publications using embedding-based similarity.
