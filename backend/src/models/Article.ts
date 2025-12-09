@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 const ArticleSchema = new Schema(
     {
       pmid: { type: String, required: true, unique: true },
-      pmcid: { type: String, default: null, index: {unique: true, sparse: true}},
+      pmcid: { type: String, unique: true, sparse: true },
       canFullText: {type: Boolean, default: false },
       title: { type: String, default: "" },
       abstract: { type: String, default: "" },

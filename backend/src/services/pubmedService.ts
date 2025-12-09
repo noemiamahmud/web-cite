@@ -10,6 +10,39 @@ function extractXml(xml: string, tag: string): string {
     return match ? match[1].trim() : "";
   }
 
+function extractAuthors(xml: string): string[] {
+  const authorListMatches = xml.match(/<AuthorList>([\s\S]*?)<\/AuthorList>/);
+  if (!authorListMatches) return [];
+
+  const authorListXml = authorListMatches[1];
+  const authorMatches = [...authorListXml.matchAll(/<Author>([\s\S]*?)<\/Author>/g)];
+
+  return authorMatches.map((match) => {
+    const authorXml = match[1];
+    const lastName = extractXml(authorXml, "LastName");
+    const foreName = extractXml(authorXml, "ForeName");
+    const collectiveName = extractXml(authorXml, "CollectiveName"); 
+
+    if (collectiveName) return collectiveName;
+    return [foreName, lastName].filter(Boolean).join(" ");
+  });
+}
+
+function extractYear(xml: string): number | undefined {
+  // Try to extract <Year> first
+  const yearStr = extractXml(xml, "Year");
+  if (yearStr && /^\d{4}$/.test(yearStr)) return Number(yearStr);
+
+  // Fallback: try MedlineDate like "2025 Dec"
+  const medlineDate = extractXml(xml, "MedlineDate");
+  if (medlineDate) {
+    const match = medlineDate.match(/\d{4}/);
+    if (match) return Number(match[0]);
+  }
+
+  // If all fails, return undefined
+  return undefined;
+}
 
 export const searchArticlesHandler = async (req: Request, res: Response) => {
   const query = req.query.q as string;
@@ -60,23 +93,49 @@ export const getArticleHandler = async (req: Request, res: Response) => {
 
   const xml = fetch.data;
 
-  const title = xml.match(/<ArticleTitle>(.*?)<\/ArticleTitle>/)?.[1] || "";
-  const abstract = xml.match(/<Abstract>([\s\S]*?)<\/Abstract>/)?.[1] || "";
-  //extracting more info for ArticleView 
+  const title = extractXml(xml, "ArticleTitle");
+  const abstract = extractXml(xml, "Abstract");
+  const journal = extractXml(xml, "Title");
+  const pubDate = extractXml(xml, "PubDate");
+  const year = extractYear(xml);
   const pmcidMatch = xml.match(/<ArticleId IdType="pmc">(PMC\d+)<\/ArticleId>/);
-  const pmcid = pmcidMatch ? pmcidMatch[1]: null; 
-  const canFullText = !!pmid; 
+  const pmcid = pmcidMatch ? pmcidMatch[1] : undefined;
+  const authors = extractAuthors(xml);
 
-
-  const newArticle = await Article.create({
+  const articleData: any = {
     pmid,
-    pmcid, 
-    canFullText,
+    canFullText: !!pmcid,
     title,
     abstract,
+    authors,
+    journal,
+    year,
     source: "pubmed",
-  });
+  };
 
+  if (pmcid) {
+    articleData.pmcid = pmcid;
+    try {
+      const fullTextRes = await axios.get(
+        `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/?format=xml`
+      );
+      articleData.fullTextXml = fullTextRes.data; // optional, only if full text exists
+    } catch (err) {
+      console.warn("PMC full text fetch failed:", err);
+    }
+  }
+
+  let newArticle;
+    try {
+      newArticle = await Article.create(articleData);
+    } catch (err: any) {
+      if (err.code === 11000) {
+        // duplicate, return existing article
+        newArticle = await Article.findOne({ pmid });
+      } else {
+        throw err;
+      }
+    }
   res.json({ article: newArticle });
 };
 // Fetch a single PubMed article by PMID (safe, consistent, no missing symbols)
