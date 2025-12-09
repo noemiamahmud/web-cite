@@ -1,0 +1,95 @@
+.view-article-parent {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+}
+
+.article-navbar {
+    width: 280px;
+    padding: 15px;
+    background: #f7f7f7;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.article-navbar ul {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.article-navbar li {
+    margin: 5px 0;
+}
+
+.keyword-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+.article-navbar li span {
+    font-weight: 500;
+}
+
+.keyword-input {
+    display: flex;
+    gap: 10px;  
+    align-items: center;
+}
+
+.keyword-input input {
+    width: 50%;
+}
+
+.add-key-btn {
+    width: 40%;
+    padding: 5px;
+    color: white;
+    background-color: #15335C;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-btn {
+    width: 25%;
+    padding: 5px;
+    color: white;
+    background-color: #15335C;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.match-btn {
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.article-box {
+    flex: 1;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.article-box h1 {
+    margin-top: 0;
+}
+
+.article-box h3 {
+    margin-top: 20px;
+}
+
+.article-box a {
+    display: inline-block;
+    margin-top: 20px;
+    font-weight: bold;
+}

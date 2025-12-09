@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { publicFetch } from "../api/apiClient";
+import DOMPurify from "dompurify";
+import "./ViewArticle.css"
 
 type Section = {
     id: string;
@@ -31,6 +33,10 @@ function ArticleView() {
     const [keywords, setKeywords] = useState<string[]>([]);
     const [keywordInput, setKeywordInput] = useState("");
     const [matches, setMatches] = useState<Record<string, { keyword: string; snippet: string }[]>>({});
+
+    const sanitizeHTML = (html: string) => {
+        return DOMPurify.sanitize(html);  
+    };
 
     function parseAbstract(xml: string): Section[] {
         const abstractMatches = [...xml.matchAll(/<AbstractText[^>]*>([\s\S]*?)<\/AbstractText>/g)];
@@ -113,91 +119,91 @@ function ArticleView() {
     if (!article) return <div>Loading...</div>;
     
     return (
-        <div style={{ display: "flex" }}>
-      <div style={{ width: "200px", padding: "1rem", borderRight: "1px solid #ccc" }}>
-        <h3>Search Keywords</h3>
-        <div className="keyword-input">
-          <input
-            type="text"
-            placeholder="Enter keyword"
-            value={keywordInput}
-            onChange={(e) => setKeywordInput(e.target.value)}
-          />
-          <button onClick={handleAddKeyword}>Add Keyword</button>
-        </div>
-        {keywords.length > 0 && (
-          <div>
-            <h4>Keywords</h4>
-            <ul>
-              {keywords.map((kw, idx) => (
-                <li key={idx} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span>{kw}</span>
-                  <button
-                    onClick={() => handleRemoveKeyword(idx)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {Object.keys(matches).length > 0 && (
-          <div>
-            <h4>Matches</h4>
-            <ul>
-              {Object.entries(matches).map(([sectionId, sectionMatches]) => (
-                <li key={sectionId}>
-                  <strong>{article.sections?.find((s) => s.id === sectionId)?.title}</strong>
-                  <ul>
-                    {sectionMatches.map((m, i) => (
-                      <li key={i}>
+        <div className="view-article-parent">
+            <div className="article-navbar">
+                <h3>Search Keywords</h3>
+                <div className="keyword-input">
+                    <input
+                        type="text"
+                        placeholder="Enter keyword"
+                        value={keywordInput}
+                        onChange={(e) => setKeywordInput(e.target.value)}
+                    />
+                    <button className="add-key-btn" onClick={handleAddKeyword}>Add Keyword</button>
+                </div>
+                {keywords.length > 0 && (
+                <div className="keyword-list">
+                    <h4>Keywords</h4>
+                    <ul>
+                    {keywords.map((kw, idx) => (
+                        <li key={idx}>
+                        <span>{kw}</span>
                         <button
-                          onClick={() => {
-                            const el = document.getElementById(sectionId);
-                            if (el) el.scrollIntoView({ behavior: "smooth" });
-                          }}
+                            className="remove-btn"
+                            onClick={() => handleRemoveKeyword(idx)}
                         >
-                          {m.snippet}
+                            Remove
                         </button>
-                      </li>
+                        </li>
                     ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+                    </ul>
+                </div>
+                )}
+                {Object.keys(matches).length > 0 && (
+                <div>
+                    <ul>
+                    {Object.entries(matches).map(([sectionId, sectionMatches]) => (
+                        <li key={sectionId}>
+                        <strong>{article.sections?.find((s) => s.id === sectionId)?.title}</strong>
+                        <ul>
+                            {sectionMatches.map((m, i) => (
+                            <li key={i}>
+                                <button
+                                className="match-btn"
+                                onClick={() => {
+                                    const el = document.getElementById(sectionId);
+                                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                                }}
+                                >
+                                {m.snippet}
+                                </button>
+                            </li>
+                            ))}
+                        </ul>
+                        </li>
+                    ))}
+                    </ul>
+                </div>
+                )}
+            </div>
 
-      <div style={{ flex: 1, padding: "1rem" }}>
-        <h1>{article.title}</h1>
-        {article.authors && article.authors.length > 0 && (
-          <p>Authors: {article.authors.join(", ")}</p>
-        )}
-        <p>Journal: {article.journal}</p>
-        <p>Year: {article.year}</p>
+            <div className="article-box">
+                <h1>{article.title}</h1>
+                {article.authors && article.authors.length > 0 && (
+                <p>Authors: {article.authors.join(", ")}</p>
+                )}
+                <p>Journal: {article.journal}</p>
+                <p>Year: {article.year}</p>
 
-        <h2>{article.fullTextXml ? "Full Text" : "Abstract"}</h2>
-        {article.sections?.map((section) => (
-          <div key={section.id} id={section.id}>
-            <h3>{section.title}</h3>
-            <p>{section.text}</p>
-          </div>
-        ))}
+                <h2>{article.fullTextXml ? "Full Text" : "Abstract"}</h2>
+                {article.sections?.map((section) => (
+                <div key={section.id} id={section.id}>
+                    <h3>{section.title}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: sanitizeHTML(section.text) }} />
+                </div>
+                ))}
 
-        {!article.canFullText && (
-          <a
-            href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View full article on PubMed
-          </a>
-        )}
-      </div>
-    </div>
+                {!article.canFullText && (
+                <a
+                    href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    View full article on PubMed
+                </a>
+                )}
+            </div>
+        </div>
     );
 }
 
