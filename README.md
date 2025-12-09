@@ -18,12 +18,12 @@
 - Users will be able to save papers that they read and organize them in their account for reference
 - Users can create and save their own keyword webs connecting papers for their projects.
 
-### Similar Apps:
+### Similar Sites:
 - **EBSCO** - Research paper database
 - **PubMed** - Research paper database
 - **GetLiner** - Searches through research paper with prompts
 
-### What Makes Our App Different:
+### What Makes Our Site Different:
 - While there are applications that create webs of sources for specific keywords and topics, we were not able to find an application which **creates source maps for any keywords chosen by the user.** 
 - The similar applications we have also do not allow for **user editing and customization of the webs created.** 
 - There are tools for creating thought maps and webs. The ones we found all required users to build them but none that automatically **searched - for sources relating to the topics and created webs** that users can then change. 
