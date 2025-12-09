@@ -11,6 +11,7 @@ import Signup from "./pages/Signup";
 import Web from "./pages/Web";
 import MyWebs from "./pages/MyWebs";
 import Profile from "./pages/profile";
+import ArticleView from "./pages/ViewArticle";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/web/:webId" element={<Web />} />
         <Route path="/my-webs" element={<MyWebs />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/article/:pmid" element={<ArticleView />} />
       </Routes>
     </Router>
   );
