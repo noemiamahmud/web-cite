@@ -25,10 +25,15 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://web-cite.vercel.app"
+    ],
     credentials: true,
   })
 );
+
+
 
 // --- ROUTES ---
 app.use("/api/auth", authRoutes);
