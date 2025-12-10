@@ -12,7 +12,7 @@ const SearchResult: React.FC<ResultValues> = ({ pmid, title }) => {
   const navigate = useNavigate();
 
   const handleArticleClick = () => {
-    navigate(`/article/${pmid}`, { state: {pmid, title}});
+    navigate(`/article/${pmid}`, { state: { pmid, title } });
   };
 
   const handleWebClick = async () => {
@@ -35,7 +35,7 @@ const SearchResult: React.FC<ResultValues> = ({ pmid, title }) => {
         body: JSON.stringify(payload),
       });
 
-      // ✅ VERY IMPORTANT: backend returns { web }
+      // VERY IMPORTANT: backend returns { web }
       const webId = data.web?._id;
 
       if (!webId) {

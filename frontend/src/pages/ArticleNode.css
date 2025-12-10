@@ -1,0 +1,38 @@
+.article-node {
+    padding: 10px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    min-width: 160px;
+    max-width: 220px;
+
+    text-align: center;
+
+
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.article-title {
+    margin-bottom: 8px;
+    font-weight: bold;
+
+
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.article-button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    background-color: #15335c;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.article-button:hover {
+    background-color: #1d4b8f;
+}

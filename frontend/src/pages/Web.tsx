@@ -1,18 +1,32 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useNodesState, useEdgesState } from "reactflow";
 import { authFetch } from "../api/apiClient";
-import ReactFlow from "reactflow";
+import ReactFlow, {
+  useNodesState,
+  useEdgesState
+} from "reactflow";
+
 import type { Node, Edge } from "reactflow";
+
 import { autoLayout } from "../utils/autoLayout";
+import ArticleNode from "./ArticleNode";
+
+import "reactflow/dist/style.css";
 import "./web.css";
+
+// Register custom node type
+const nodeTypes = {
+  article: ArticleNode,
+};
 
 function Web() {
   const { webId } = useParams();
   const navigate = useNavigate();
 
+  // ReactFlow state hooks (dragging supported)
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
 
@@ -32,15 +46,20 @@ function Web() {
 
         setTitle(web.title);
 
+        // Convert backend nodes → ReactFlow nodes
         const rfNodes: Node[] = web.nodes.map((n: any) => ({
           id: n.article._id,
           position: n.position || { x: 0, y: 0 },
+          type: "article",
           data: {
             label: n.article.title || n.article.pmid,
+            url:
+              n.article.url ||
+              `https://pubmed.ncbi.nlm.nih.gov/${n.article.pmid}`,
           },
-          type: "default",
         }));
 
+        // Convert backend edges → ReactFlow edges
         const rfEdges: Edge[] = web.edges.map((e: any) => ({
           id: `${e.from}-${e.to}`,
           source: e.from,
@@ -48,7 +67,10 @@ function Web() {
           label: e.relation || "",
         }));
 
-        setNodes(autoLayout(rfNodes, rfEdges));
+        // Layout once (only on load)
+        const laidOut = autoLayout(rfNodes, rfEdges);
+
+        setNodes(laidOut);
         setEdges(rfEdges);
       } catch (err) {
         console.error("Failed to load web:", err);
@@ -59,15 +81,13 @@ function Web() {
     loadWeb();
   }, [webId, navigate]);
 
-  // NODE CLICK → EXPAND CHILDREN
+  // EXPAND NODE → ADD CHILDREN
   const handleNodeClick = useCallback(
     async (_: any, node: Node) => {
       try {
         const res = await authFetch(`/api/webs/${webId}/expand`, {
           method: "POST",
-          body: JSON.stringify({
-            nodePmid: node.id, // ✅ MUST BE PMID / ID — NOT LABEL
-          }),
+          body: JSON.stringify({ nodePmid: node.id }),
         });
 
         const newNodes: Node[] = res.children.map((child: any, i: number) => ({
@@ -76,10 +96,13 @@ function Web() {
             x: node.position.x + 240,
             y: node.position.y + i * 140,
           },
+          type: "article",
           data: {
             label: child.title || child.pmid,
+            url:
+              child.url ||
+              `https://pubmed.ncbi.nlm.nih.gov/${child.pmid}`,
           },
-          type: "default",
         }));
 
         const newEdges: Edge[] = res.children.map((child: any) => ({
@@ -89,21 +112,20 @@ function Web() {
           label: "similarity",
         }));
 
-        // De-duplicate nodes so ReactFlow never crashes
+        // Deduplicate nodes
         setNodes((prev) => {
-          const existingIds = new Set(prev.map((n) => n.id));
-          const filtered = newNodes.filter((n) => !existingIds.has(n.id));
-          return [...prev, ...filtered]; // ← Do NOT autoLayout here
+          const existing = new Set(prev.map((n) => n.id));
+          const filtered = newNodes.filter((n) => !existing.has(n.id));
+          return [...prev, ...filtered];
         });
 
         setEdges((prev) => [...prev, ...newEdges]);
       } catch (err) {
-        console.error("Node expansion failed:", err);
+        console.error("Expansion failed:", err);
       }
     },
     [webId]
   );
-
 
   if (error) return <p>{error}</p>;
   if (!nodes.length) return <p>Loading graph...</p>;
@@ -115,9 +137,10 @@ function Web() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
+        onNodeClick={handleNodeClick}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeClick={handleNodeClick}
         fitView
       />
     </div>
