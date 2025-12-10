@@ -75,7 +75,7 @@ function Profile() {
                         <p>Email: {userInfo?.email || 'user@example.com'}</p>
                     </div>
                     <div>
-                        <p>Webs Created: ##</p>
+                        <p>Webs Created: {webs.length}</p>
                     </div>
                 </div>
             </div>
