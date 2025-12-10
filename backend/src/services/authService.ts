@@ -47,7 +47,14 @@ export const loginHandler = async (req: Request, res: Response) => {
 
 export const meHandler = async (req: any, res: Response) => {
   const user = await User.findById(req.userId).select("-passwordHash");
-  res.json({ user });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  console.log("User found:", user);
+  res.json({
+    username: user.username,
+    email: user.email,
+  });
 };
 
 export const logoutHandler = async (_req: Request, res: Response) => {
