@@ -12,7 +12,7 @@ import { autoLayout } from "../utils/autoLayout";
 import ArticleNode from "./ArticleNode";
 
 import "reactflow/dist/style.css";
-import "./web.css";
+import "./Web.css";
 
 // Register custom node type
 const nodeTypes = {

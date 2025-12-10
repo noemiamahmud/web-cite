@@ -1,4 +1,4 @@
-import defaultProfile from '../components/componentassets/gg--profile.png';
+import defaultProfile from "../components/componentAssets/gg--profile.png";
 import { authFetch } from '../api/apiClient';
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
