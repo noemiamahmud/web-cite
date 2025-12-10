@@ -10,16 +10,16 @@ export default function DefaultHeaderSignedOut() {
 
   return (
     <div className="navbar">
-      {/* ✅ LOGO → SEARCH */}
+      {/* LOGO → SEARCH */}
       <div className="navbar-logo">
-      <img
-        // className="navbar-logo"
-        id="Web-Cite-logo"
-        src={logo}
-        alt="Logo"
-        style={{ cursor: "pointer" }}
-        onClick={() => navigate("/")}
-      />
+        <img
+          // className="navbar-logo"
+          id="Web-Cite-logo"
+          src={logo}
+          alt="Logo"
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate("/")}
+        />
       </div>
 
       <div className="navbar-buttons">
