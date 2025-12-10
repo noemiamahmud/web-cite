@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useNodesState, useEdgesState } from "reactflow";
 import { authFetch } from "../api/apiClient";
 import ReactFlow from "reactflow";
 import type { Node, Edge } from "reactflow";
@@ -10,8 +11,8 @@ function Web() {
   const { webId } = useParams();
   const navigate = useNavigate();
 
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
 
@@ -58,7 +59,7 @@ function Web() {
     loadWeb();
   }, [webId, navigate]);
 
-  // ✅ ✅ NODE CLICK → EXPAND CHILDREN
+  // NODE CLICK → EXPAND CHILDREN
   const handleNodeClick = useCallback(
     async (_: any, node: Node) => {
       try {
@@ -68,7 +69,7 @@ function Web() {
             nodePmid: node.id, // ✅ MUST BE PMID / ID — NOT LABEL
           }),
         });
-  
+
         const newNodes: Node[] = res.children.map((child: any, i: number) => ({
           id: child._id,
           position: {
@@ -80,23 +81,21 @@ function Web() {
           },
           type: "default",
         }));
-  
+
         const newEdges: Edge[] = res.children.map((child: any) => ({
           id: `${node.id}-${child._id}`,
           source: node.id,
           target: child._id,
           label: "similarity",
         }));
-  
-        // ✅ De-duplicate nodes so ReactFlow never crashes
+
+        // De-duplicate nodes so ReactFlow never crashes
         setNodes((prev) => {
           const existingIds = new Set(prev.map((n) => n.id));
           const filtered = newNodes.filter((n) => !existingIds.has(n.id));
-        
-          const combined = [...prev, ...filtered];
-          return autoLayout(combined, [...edges, ...newEdges]);
+          return [...prev, ...filtered]; // ← Do NOT autoLayout here
         });
-        
+
         setEdges((prev) => [...prev, ...newEdges]);
       } catch (err) {
         console.error("Node expansion failed:", err);
@@ -104,7 +103,7 @@ function Web() {
     },
     [webId]
   );
-  
+
 
   if (error) return <p>{error}</p>;
   if (!nodes.length) return <p>Loading graph...</p>;
@@ -116,7 +115,9 @@ function Web() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodeClick={handleNodeClick}  // ✅ WORKS NOW
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onNodeClick={handleNodeClick}
         fitView
       />
     </div>
