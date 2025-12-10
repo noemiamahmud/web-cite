@@ -1,6 +1,5 @@
 //import { pipeline } from "@xenova/transformers"; //original import 
 
-// Load once, reuse for every request
 let embedder: any = null;
 
 async function loadEmbedder() {
