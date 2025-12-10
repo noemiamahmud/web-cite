@@ -29,6 +29,7 @@ function Web() {
 
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadWeb() {
@@ -75,19 +76,24 @@ function Web() {
       } catch (err) {
         console.error("Failed to load web:", err);
         setError("Failed to load graph.");
+      } finally {
+        setLoading(false);
       }
     }
 
     loadWeb();
   }, [webId, navigate]);
 
-  // EXPAND NODE → ADD CHILDREN
+
+  // NODE CLICK → EXPAND CHILDREN
   const handleNodeClick = useCallback(
     async (_: any, node: Node) => {
       try {
         const res = await authFetch(`/api/webs/${webId}/expand`, {
           method: "POST",
-          body: JSON.stringify({ nodePmid: node.id }),
+          body: JSON.stringify({
+            nodePmid: node.id,
+          }),
         });
 
         const newNodes: Node[] = res.children.map((child: any, i: number) => ({
@@ -112,7 +118,7 @@ function Web() {
           label: "similarity",
         }));
 
-        // Deduplicate nodes
+        //De-duplicate nodes so ReactFlow never crashes
         setNodes((prev) => {
           const existing = new Set(prev.map((n) => n.id));
           const filtered = newNodes.filter((n) => !existing.has(n.id));
@@ -128,6 +134,7 @@ function Web() {
   );
 
   if (error) return <p>{error}</p>;
+  if (loading) return <p style={{ textAlign: "center" }}>Loading graph...</p>;
   if (!nodes.length) return <p>Loading graph...</p>;
 
   return (
