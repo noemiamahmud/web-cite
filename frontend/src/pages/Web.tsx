@@ -14,6 +14,7 @@ function Web() {
   const [edges, setEdges] = useState<Edge[]>([]);
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadWeb() {
@@ -52,20 +53,22 @@ function Web() {
       } catch (err) {
         console.error("Failed to load web:", err);
         setError("Failed to load graph.");
+      } finally {
+        setLoading(false);
       }
     }
 
     loadWeb();
   }, [webId, navigate]);
 
-  // ✅ ✅ NODE CLICK → EXPAND CHILDREN
+  // NODE CLICK → EXPAND CHILDREN
   const handleNodeClick = useCallback(
     async (_: any, node: Node) => {
       try {
         const res = await authFetch(`/api/webs/${webId}/expand`, {
           method: "POST",
           body: JSON.stringify({
-            nodePmid: node.id, // ✅ MUST BE PMID / ID — NOT LABEL
+            nodePmid: node.id,  
           }),
         });
   
@@ -88,7 +91,7 @@ function Web() {
           label: "similarity",
         }));
   
-        // ✅ De-duplicate nodes so ReactFlow never crashes
+        //De-duplicate nodes so ReactFlow never crashes
         setNodes((prev) => {
           const existingIds = new Set(prev.map((n) => n.id));
           const filtered = newNodes.filter((n) => !existingIds.has(n.id));
@@ -107,6 +110,7 @@ function Web() {
   
 
   if (error) return <p>{error}</p>;
+  if (loading) return <p style={{ textAlign: "center" }}>Loading graph...</p>;
   if (!nodes.length) return <p>Loading graph...</p>;
 
   return (
@@ -116,7 +120,7 @@ function Web() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodeClick={handleNodeClick}  // ✅ WORKS NOW
+        onNodeClick={handleNodeClick}   
         fitView
       />
     </div>

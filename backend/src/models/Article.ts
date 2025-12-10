@@ -13,8 +13,8 @@ const ArticleSchema = new Schema(
       source: { type: String, default: "pubmed" },
       journal: String,
       year: Number,
-  
       embedding: { type: [Number], default: [] },
+      fullTextXml: { type: String, default: "" }, 
     },
     { timestamps: true }
   );

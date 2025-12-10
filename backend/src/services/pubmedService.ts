@@ -119,9 +119,10 @@ export const getArticleHandler = async (req: Request, res: Response) => {
       const fullTextRes = await axios.get(
         `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/?format=xml`
       );
-      articleData.fullTextXml = fullTextRes.data; // optional, only if full text exists
+      articleData.fullTextXml = fullTextRes.data; 
     } catch (err) {
       console.warn("PMC full text fetch failed:", err);
+      articleData.fullTextXml = null;
     }
   }
 
